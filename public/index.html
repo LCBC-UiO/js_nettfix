@@ -126,6 +126,22 @@
        });
     };
 
+    function display_comment(){
+      e_p = document.createElement("div");
+      e_input = document.createElement("input");
+      e_input.setAttribute("id", "comment_input");
+      e_input.setAttribute("size", "50");
+      e_btn = document.createElement("button");
+      e_btn.classList = "btn btn-primary my-2";
+      e_btn.innerHTML = "Submit comment";
+      e_btn.setAttribute("onclick", 'display_modal("success", "what", "success")');
+      e_p.appendChild(e_input);
+      e_p.appendChild(e_btn);
+      var footer = "This will be added to each entry to describe why they have been edited";      
+      display_modal("Add comment", e_p, "secondary", footer)
+      
+    }
+
     ////////////////////////////////////
     //   CHANGE WEBSITE INFORMATION   //
     async function display_table(table, divid, ncol = null){
@@ -165,21 +181,6 @@
       });
     }
 
-    function display_alert(type, text=null, element=null){
-      e_al = document.getElementById("alerts");
-      e_al.classList = "alert text-center my-3";
-      e_al.innerHTML = "";
-      e_al.classList.add("alert-" + type);
-      if(text != null){
-        e_p = document.createElement("p");
-        e_p.innerHTML = text;
-        e_al.appendChild(e_p);
-      };
-      if(element != null){
-        e_al.appendChild(element);
-      };
-    }
-
     async function trigger_table(){
       table = await get_tsv();
       await display_table(table, "tsv");
@@ -189,6 +190,7 @@
 
     function display_modal(title, body, type, footer=null){
       mod = document.getElementById("modal");
+      mod.innerHTML = "";
       mod_diag = document.createElement("div");
       mod_diag.classList = "modal-dialog";
       mod.appendChild(mod_diag);
@@ -233,22 +235,28 @@
         return v.value; 
       });
       let getstr = "./cgi/add_deletions.cgi?=" + formid + "?" + values.join("-")
+      console.log(getstr);
       await fetch(getstr).then(r =>{
-        console.log(r.json());
         r.json().then(function(data){
           switch(r.status){
             case 210:
               e_p = document.createElement("p");
-              e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ")
-              display_modal("Error", e_p, "danger", "These will need manual inspection, contact Mo")
+              e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
+              var footer = "These will need manual inspection, contact Mo";
+              display_modal("Error", e_p, "danger", footer);
               break;
             case 220:
-              console.log("Adding entry");
+              //e_p = document.createElement("p");
+              //e_p.innerHTML = "Deletion entry has been made for submission id(s):<br>" + values.join(", ") ;   
+              display_comment();
               break;
             case 230:
-              let str = "New edit file with entries initiated for form " + formid;
-              display_modal("Success", e_p, "success", str)
-              console.log("Creating edit file");
+              e_p = document.createElement("p");
+              e_p.innerHTML = "New edit file with entries initiated for form " + formid;             
+              var title = "Success";
+              var type =  "success";
+              var footer = null;
+              display_modal(title, e_p, type, footer)
               break;
           }
         });

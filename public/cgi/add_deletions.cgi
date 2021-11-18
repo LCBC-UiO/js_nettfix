@@ -36,8 +36,14 @@ if [ -e $edfile ]; then
     cat ${tmpfile2}_n | sed 's/^/{"submission_id":[/' | sed 's/$/]}/'
   else
     printf "Status: 220 Added entry\r\n" 
-    printf "\r\n" 
-    echo ${subm_ids}
+    printf "\r\n"
+    cp $edfile $tmpfile2
+
+    printf "{\n" > $edfile
+    cat $tmpfile >> $edfile
+    printf "," >> $edfile
+    cat $tmpfile2  | sed 's/^{//' >> $edfile
+    cat $edfile
   fi
 else
   printf "Status: 230 Created edits\r\n" 
@@ -46,7 +52,7 @@ else
   printf '{\n' > $edfile
   cat $tmpfile >> $edfile
   printf '\n}\n' >> $edfile
-  cat "newfile"
+  cat $edfile
 fi
 
 # cleanup 
