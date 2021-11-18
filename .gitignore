@@ -1,0 +1,9 @@
+node_modules
+package-lock.json
+package.json
+3rdparty/download
+3rdparty/lighttpd
+3rdparty/r_packages
+public/bootstrap*
+.DS_Store
+.Rhistory

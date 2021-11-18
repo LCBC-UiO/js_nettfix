@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Nettfix</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='bootstrap-5.1.3-dist/css/bootstrap.min.css'>
+    <script src='bootstrap-5.1.3-dist/js/bootstrap.bundle.min.js'></script>
+    <script src='jquery.min.js'></script>
+    <style>
+      .table thead th { position: sticky; top: 0; z-index: 1;}
+      .table thead th :disabled { background: #0275d8; color: white; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="navbar navbar-light bg-light shadow-sm">
+          <div id="navbar" class="container d-flex justify-content-between">
+            <div class="navbar-brand text-muted">
+              Nettfix
+            </div>
+        </div>
+      </div>
+    </header>
+    <div class="container-md my-5">
+      <div class="row">
+        <div class="col-md">
+          <p>
+            This tool will let you edit data from Nettskjema. 
+            These edits are usually edits to data that stop data from being entered into the NOAS.
+            Any changes needing to be made in data already in the NOAS, should be corrected in the NOAS, <b>not</b>
+            through this editor.
+          </p>
+        </div>
+        <div class="col-md">
+          <ul><b>Changes often include:</b>
+            <li>incorrect ID</li>
+            <li>inconsistent sex</li>
+            <li>inconsisten birthdate</li>
+            <li>data that should be deleted (i.e. not enter NOAS)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-md my-5">
+      Form: <select class="btn btn-secondary dropdown-toggle" id="form_id" onchange=trigger_table()></select>
+      <div id="alerts"></div>
+      <div id="modal" class="modal fade" role="dialog"></div>
+      <ul class="nav nav-tabs my-3" id="actiontab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="edit-tab" data-bs-toggle="tab" data-bs-target="#edit" type="button" role="tab" aria-controls="edit" aria-selected="true">Edit entries</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="delete-tab" data-bs-toggle="tab" data-bs-target="#delete" type="button" role="tab" aria-controls="delete" aria-selected="false" onclick=get_submissions()>Delete submissions</button>
+        </li>
+      </ul>
+      <div class="tab-content" id="actiontabContent">
+        <div class="tab-pane fade show active" id="edit" role="tabpanel" aria-labelledby="edit-tab">
+          <div class="row">
+            <div id="tsv" class="table table-responsive my-3"></div>
+          </div>
+          <div class="row">
+            <button id="savebtn" class="btn btn-primary my-3" disabled=true>Save edits</button>
+          </div>        
+        </div>
+        <div class="tab-pane fade my-3" id="delete" role="tabpanel" aria-labelledby="delete-tab">
+          <div class="row flex-nowrap">
+            <div class="col-2">
+              Submission id(s) to delete:<br>
+              <select class="row btn btn-secondary dropdown-toggle" id="submission_id" multiple></select>
+              <small class="row text-muted">Select multiple entries by pressing ctrl or cmd</small>
+            </div>
+            <div class="col-6" id="deltsv" class="table table-responsive my-3" disabled=true></div>
+          </div>
+          <div class="row">
+            <button id="delbtn" class="btn btn-primary my-3" onclick=on_delete_input()>Save edits</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+
+  <script>
+    ////////////////////////////////////
+    // GETTING DATA FROM SYSTEM FILES //
+    async function get_forms() {
+      const r_forms = await fetch("./cgi/get_form_id.cgi");
+      r_forms_j = await r_forms.json();
+      let e_forms = document.getElementById("form_id");
+      let e_forms_li = document.createElement("option");
+      e_forms.appendChild(e_forms_li);
+      // generate selection list of forms
+      r_forms_j.forms.forEach(
+        function(f_id){
+          if(f_id == "NULL") return; // dont display NULL
+          let e_forms_li = document.createElement("option");
+          e_forms_li.innerHTML = `${f_id}`;
+          e_forms.appendChild(e_forms_li);
+        }
+      )
+    };
+
+    async function get_tsv(){
+      var formid = document.getElementById("form_id").value;
+      var getstr = "./cgi/get_form_csv.cgi?=" + formid;
+      const r = await fetch(getstr);
+      if (!r.ok) {
+        console.log("error ok");
+      }
+      const tsv_str = await r.text();
+      const table = tsv_str.split("\n").map(l => l.split("\t"));
+      return table;
+    }
+
+    async function get_submissions(table){
+      if(table === undefined) return; // return if no form selected, quiets initial console errors
+      let e_forms = document.getElementById("submission_id");
+      e_forms.innerHTML = ""; // empty list
+      table.forEach((r,row_idx) => {
+        if(row_idx == 0) return;
+        let e_forms_li = document.createElement("option");
+        e_forms_li.innerHTML = `${r[0]}`;
+        e_forms.appendChild(e_forms_li);
+       });
+    };
+
+    ////////////////////////////////////
+    //   CHANGE WEBSITE INFORMATION   //
+    async function display_table(table, divid, ncol = null){
+      const e_table = document.getElementById(divid);
+      e_table.innerHTML = ""; // remove previous table from div
+      // if ncol is null or more columns than table has, take all columns
+      if(ncol == null || ncol > table[0].length) ncol = table[0].length;
+      table.forEach((r,row_idx) => {
+        const e_tr = document.createElement("tr");
+        if(row_idx == 0){ // make table header
+          const e_thead = document.createElement("thead");
+          e_thead.classList.add("thead-primary");
+          e_thead.classList.add("bg-primary");
+          e_thead.classList.add("text-white");
+          e_thead.appendChild(e_tr);
+          e_table.appendChild(e_thead);
+          var e_type = "th";
+        }else{
+          e_table.appendChild(e_tr);
+          var e_type = "td";
+        }
+        for (let col_idx = 0; col_idx < ncol; col_idx++) {
+          let f = r[col_idx]
+          const e_td = document.createElement(e_type);
+          e_tr.appendChild(e_td);
+          const e_input = document.createElement("input");
+          e_td.appendChild(e_input);
+          e_input.type = "text";
+          e_input.value = f;
+          if(row_idx == 0){
+           e_input.disabled = true; //dont allow input on header
+          }else{
+            // on input, data is updated
+            e_input.oninput = (evt) => on_tsv_input(evt, table, row_idx, col_idx);
+          }
+        }
+      });
+    }
+
+    function display_alert(type, text=null, element=null){
+      e_al = document.getElementById("alerts");
+      e_al.classList = "alert text-center my-3";
+      e_al.innerHTML = "";
+      e_al.classList.add("alert-" + type);
+      if(text != null){
+        e_p = document.createElement("p");
+        e_p.innerHTML = text;
+        e_al.appendChild(e_p);
+      };
+      if(element != null){
+        e_al.appendChild(element);
+      };
+    }
+
+    async function trigger_table(){
+      table = await get_tsv();
+      await display_table(table, "tsv");
+      await display_table(table, "deltsv", 5); // display only five first columns when deleting entries
+      await get_submissions(table);
+    }
+
+    function display_modal(title, body, type, footer=null){
+      mod = document.getElementById("modal");
+      mod_diag = document.createElement("div");
+      mod_diag.classList = "modal-dialog";
+      mod.appendChild(mod_diag);
+      mod_cont = document.createElement("div");
+      mod_cont.classList = "modal-content";
+      mod_diag.appendChild(mod_cont);
+      mod_head = document.createElement("div");
+      mod_head.classList = "modal-header";
+      mod_cont.appendChild(mod_head);
+      mod_h4 = document.createElement("h4");
+      mod_h4.classList = "text-" + type;
+      mod_h4.innerHTML = title;
+      mod_head.appendChild(mod_h4);
+      mod_body = document.createElement("div");
+      mod_body.classList = "modal-body alert alert-" + type;
+      mod_body.appendChild(body);
+      mod_cont.appendChild(mod_body);
+      if(footer != null){
+        mod_foot = document.createElement("div");
+        mod_foot_sm = document.createElement("small");
+        mod_foot.classList = "modal-footer";
+        mod_foot_sm.innerHTML = footer;
+        mod_foot_sm.classList = "text-muted";
+        mod_foot.appendChild(mod_foot_sm);
+        mod_cont.appendChild(mod_foot);
+      }
+      $('#modal').modal('show');
+    }
+
+    ////////////////////////////////////
+    //     ON USER EDIT REQUESTS      //
+    function on_tsv_input(evt, table, row_idx, col_idx) {
+      document.getElementById("savebtn").disabled = false;
+      table[row_idx][col_idx] = evt.target.value;
+      //console.log(table.map(r => r.join("\t")).join("\n"));
+    }
+
+    async function on_delete_input(){
+      var formid = document.getElementById("form_id").value;
+      var sid = document.querySelectorAll('#submission_id option:checked') ;
+      var values = Array.prototype.slice.call(sid,0).map(function(v) { 
+        return v.value; 
+      });
+      let getstr = "./cgi/add_deletions.cgi?=" + formid + "?" + values.join("-")
+      await fetch(getstr).then(r =>{
+        console.log(r.json());
+        r.json().then(function(data){
+          switch(r.status){
+            case 210:
+              e_p = document.createElement("p");
+              e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ")
+              // display_alert("danger", al_text, e_p);
+              display_modal("Error", e_p, "danger", "These will need manual inspection, contact Mo")
+              break;
+            case 220:
+              console.log("Adding entry");
+              break;
+            case 230:
+              let str = "New edit file with entries initiated for form " + formid;
+              display_modal("Success", e_p, "success", str)
+              console.log("Creating edit file");
+              break;
+          }
+        });
+      }); 
+    };
+
+    // Start the whole thing, grab forms!
+    get_forms();
+  </script>
+</html>
