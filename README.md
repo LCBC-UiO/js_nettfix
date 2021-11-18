@@ -1,5 +1,8 @@
 # Nettfix
 
+This little application should enable users to make small edits to incoming nettskjema data.
+These edits are stored in json files along side the original data on the local file system. 
+
 ## Runnin a localhost server of the application
 
 To prepare the application to run, you will need to download all the necessary components.
