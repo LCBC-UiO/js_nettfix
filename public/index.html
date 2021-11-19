@@ -126,20 +126,22 @@
        });
     };
 
-    function display_comment(){
-      e_p = document.createElement("div");
-      e_input = document.createElement("input");
-      e_input.setAttribute("id", "comment_input");
-      e_input.setAttribute("size", "50");
-      e_btn = document.createElement("button");
-      e_btn.classList = "btn btn-primary my-2";
-      e_btn.innerHTML = "Submit comment";
-      e_btn.setAttribute("onclick", 'display_modal("success", "what", "success")');
-      e_p.appendChild(e_input);
-      e_p.appendChild(e_btn);
-      var footer = "This will be added to each entry to describe why they have been edited";      
-      display_modal("Add comment", e_p, "secondary", footer)
-      
+    function get_comment(){
+      var formid = document.getElementById("form_id").value;
+      e_com = document.getElementById("comment_input");
+      comstr = encodeURI(e_com.value);
+      let getstr = "./cgi/add_comment.cgi?=" + formid + "?" + comstr;
+      fetch(getstr).then(r =>{
+        e_p = document.createElement("p");
+        if (!r.ok) {
+          e_p.innerHTML = "An error occured when adding comments to the edits."
+          display_modal("Error", e_p, "danger", footer="Contact Mo for debugging.")
+        }
+        if (r.ok) {
+          e_p.innerHTML = "Entries added for deletion.";
+          display_modal("Success", e_p, "success");
+        }
+      });
     }
 
     ////////////////////////////////////
@@ -220,6 +222,21 @@
       $('#modal').modal('show');
     }
 
+    function display_modal_comment(){
+      e_p = document.createElement("div");
+      e_input = document.createElement("input");
+      e_input.setAttribute("id", "comment_input");
+      e_input.setAttribute("size", "50");
+      e_btn = document.createElement("button");
+      e_btn.classList = "btn btn-primary my-2";
+      e_btn.innerHTML = "Submit comment";
+      e_btn.setAttribute("onclick", 'get_comment()');
+      e_p.appendChild(e_input);
+      e_p.appendChild(e_btn);
+      var footer = "This will be added to each entry to describe why they have been edited";      
+      display_modal("Add comment", e_p, "secondary", footer)
+    }
+
     ////////////////////////////////////
     //     ON USER EDIT REQUESTS      //
     function on_tsv_input(evt, table, row_idx, col_idx) {
@@ -235,7 +252,7 @@
         return v.value; 
       });
       let getstr = "./cgi/add_deletions.cgi?=" + formid + "?" + values.join("-")
-      console.log(getstr);
+      //console.log(getstr);
       await fetch(getstr).then(r =>{
         r.json().then(function(data){
           switch(r.status){
@@ -245,18 +262,8 @@
               var footer = "These will need manual inspection, contact Mo";
               display_modal("Error", e_p, "danger", footer);
               break;
-            case 220:
-              //e_p = document.createElement("p");
-              //e_p.innerHTML = "Deletion entry has been made for submission id(s):<br>" + values.join(", ") ;   
-              display_comment();
-              break;
-            case 230:
-              e_p = document.createElement("p");
-              e_p.innerHTML = "New edit file with entries initiated for form " + formid;             
-              var title = "Success";
-              var type =  "success";
-              var footer = null;
-              display_modal(title, e_p, type, footer)
+            case 200:
+              display_modal_comment();
               break;
           }
         });

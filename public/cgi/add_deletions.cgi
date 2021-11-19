@@ -14,7 +14,7 @@ for (( i=0; i<${#subm_ids[@]}; i++ )); do
   if [ $i -ne  0 ]; then printf ',\n'; fi >> $tmpfile
 printf '  "%s": { 
     "data"   : "delete",
-    "comment": "comment"
+    "comment": "PLACEHOLDERCOMMENTTEXT"
   }' ${subm_ids[$i]} >> $tmpfile
 done
 
@@ -35,7 +35,7 @@ if [ -e $edfile ]; then
     tr -d '\n' < $tmpfile2 > ${tmpfile2}_n
     cat ${tmpfile2}_n | sed 's/^/{"submission_id":[/' | sed 's/$/]}/'
   else
-    printf "Status: 220 Added entry\r\n" 
+    printf "Status: 200 Added entry\r\n" 
     printf "\r\n"
     cp $edfile $tmpfile2
 
@@ -46,7 +46,7 @@ if [ -e $edfile ]; then
     cat $edfile
   fi
 else
-  printf "Status: 230 Created edits\r\n" 
+  printf "Status: 200 Created edits\r\n" 
   printf "\r\n" 
   # create new file
   printf '{\n' > $edfile
