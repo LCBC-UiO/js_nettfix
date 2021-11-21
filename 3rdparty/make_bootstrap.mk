@@ -18,8 +18,8 @@ $(bsdsts): download/%: #to get rid of "download" prefix - no prerequisites
 
 .PHONY: bootstrap_clean
 bootstrap_clean: 
-	rm -r ../public/bootstrap-5.1.3-dist
-	rm -r download/bootstrap*
+	$(RM) -r ../public/bootstrap-5.1.3-dist
+	$(RM) download/bootstrap*
 
 .PHONY: bootstrap_build
 bootstrap_build: 
