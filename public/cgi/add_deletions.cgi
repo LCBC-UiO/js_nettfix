@@ -5,11 +5,11 @@ printf "Content-Type: application/json; charset=UTF-8\r\n"
 
 declare formid=$(echo ${QUERY_STRING:1}  | cut -d'?' -f1)
 declare edfile=${DATADIR}/${formid}/edits-${formid}.json
-declare submids=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2-1000)
+declare submission_id=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2-1000)
 
 # Add new content to tmpfile
 declare tmpfile=$(mktemp)
-IFS='-' read -r -a subm_ids <<< "${submids}"
+IFS='-' read -r -a subm_ids <<< "${submission_id}"
 for (( i=0; i<${#subm_ids[@]}; i++ )); do
   if [ $i -ne  0 ]; then printf ',\n'; fi >> $tmpfile
 printf '  "%s": { 
