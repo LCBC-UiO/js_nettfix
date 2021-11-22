@@ -4,6 +4,7 @@ package.json
 3rdparty/download
 3rdparty/lighttpd
 3rdparty/r_packages
+3rdparty/jq*
 public/bootstrap*
 .DS_Store
 .Rhistory

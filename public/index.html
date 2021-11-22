@@ -74,7 +74,7 @@
             <div class="col-6" id="deltsv" class="table table-responsive my-3" disabled=true></div>
           </div>
           <div class="row">
-            <button id="delbtn" class="btn btn-primary my-3" onclick=on_delete_input()>Save edits</button>
+            <button id="delbtn" class="btn btn-primary my-3" onclick=on_input()>Save edits</button>
           </div>
         </div>
       </div>
@@ -126,24 +126,6 @@
        });
     };
 
-    function get_comment(){
-      var formid = document.getElementById("form_id").value;
-      e_com = document.getElementById("comment_input");
-      comstr = encodeURI(e_com.value);
-      let getstr = "./cgi/add_comment.cgi?=" + formid + "?" + comstr;
-      fetch(getstr).then(r =>{
-        e_p = document.createElement("p");
-        if (!r.ok) {
-          e_p.innerHTML = "An error occured when adding comments to the edits."
-          display_modal("Error", e_p, "danger", footer="Contact Mo for debugging.")
-        }
-        if (r.ok) {
-          e_p.innerHTML = "Entries added for deletion.";
-          display_modal("Success", e_p, "success");
-        }
-      });
-    }
-
     ////////////////////////////////////
     //   CHANGE WEBSITE INFORMATION   //
     async function display_table(table, divid, ncol = null){
@@ -177,7 +159,7 @@
            e_input.disabled = true; //dont allow input on header
           }else{
             // on input, data is updated
-            e_input.oninput = (evt) => on_tsv_input(evt, table, row_idx, col_idx);
+            e_input.oninput = (evt) => on_input(evt, table, row_idx, col_idx);
           }
         }
       });
@@ -227,10 +209,12 @@
       e_input = document.createElement("input");
       e_input.setAttribute("id", "comment_input");
       e_input.setAttribute("size", "50");
+      document.querySelector('input').autofocus = true;
       e_btn = document.createElement("button");
+      e_btn.setAttribute("id", "comment_btn");
       e_btn.classList = "btn btn-primary my-2";
       e_btn.innerHTML = "Submit comment";
-      e_btn.setAttribute("onclick", 'get_comment()');
+      e_btn.setAttribute("onclick", 'on_comment()');
       e_p.appendChild(e_input);
       e_p.appendChild(e_btn);
       var footer = "This will be added to each entry to describe why they have been edited";      
@@ -239,38 +223,121 @@
 
     ////////////////////////////////////
     //     ON USER EDIT REQUESTS      //
-    function on_tsv_input(evt, table, row_idx, col_idx) {
-      document.getElementById("savebtn").disabled = false;
-      table[row_idx][col_idx] = evt.target.value;
-      //console.log(table.map(r => r.join("\t")).join("\n"));
+    function on_comment(){
+      var formid = document.getElementById("form_id").value;
+      var e_com = document.getElementById("comment_input").value;
+      switch($('.nav-tabs .active').attr("id")){
+        case "delete-tab":
+          var sid = document.querySelectorAll('#submission_id option:checked');
+          var subid = Array.prototype.slice.call(sid,0).map(function(v) { 
+            return v.value; 
+          });
+          let getstr = "./cgi/add_deletions.cgi?=" + formid + "?" +  subid.join("-");
+          fetch(getstr).then(r =>{
+            let getstr2 = "./cgi/add_comment.cgi?=" + formid + "?" + encodeURI(e_com);
+            fetch(getstr2).then(rc =>{
+              e_p = document.createElement("p");
+              if (!rc.ok) {
+                e_p.innerHTML = "An error occured when adding comments to the edits."
+                display_modal("Error", e_p, "danger", footer="Contact Mo for debugging.")
+              }
+              if (rc.ok) {
+                e_p.innerHTML = "Entries added for deletion.";
+                display_modal("Success", e_p, "success");
+              }
+            })
+          })
+          break;
+        case "edit-tab":
+          break;
+      }
     }
 
-    async function on_delete_input(){
-      var formid = document.getElementById("form_id").value;
-      var sid = document.querySelectorAll('#submission_id option:checked') ;
-      var values = Array.prototype.slice.call(sid,0).map(function(v) { 
+    function on_delete_input(formid){
+      // get subid array
+      var sid = document.querySelectorAll('#submission_id option:checked');
+      var subid = Array.prototype.slice.call(sid,0).map(function(v) { 
         return v.value; 
       });
-      let getstr = "./cgi/add_deletions.cgi?=" + formid + "?" + values.join("-")
-      //console.log(getstr);
-      await fetch(getstr).then(r =>{
-        r.json().then(function(data){
-          switch(r.status){
-            case 210:
+      // check is subids can be deleted
+      let getstr = "./cgi/check_subid.cgi?=" + formid + "?delete?" + subid.join("-");
+      fetch(getstr).then(r =>{
+        if(r.status == 403){
+          r.json().then(function(data){
+            e_p = document.createElement("p");
+            e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
+            var footer = "These will need manual inspection, contact Mo";
+            display_modal("Error", e_p, "danger", footer);
+          })
+        }
+      })
+    };
+
+    function on_tsv_input(formid, evt, table, row_idx, col_idx) {
+      document.getElementById("savebtn").disabled = false;
+      var submission_id = table[row_idx][0]
+      var col_name = table[0][col_idx]
+      var entry = [submission_id, col_name, evt.target.value]
+      let getstr = "./cgi/check_subid.cgi?=" + formid + "?edit?" + entry.join("?");
+      console.log(getstr)
+      fetch(getstr).then(r => {
+        console.log(r.status);
+      })
+
+      getstr = "./cgi/edit_entry.cgi?=" + formid + "?" + entry.join("?");
+      fetch(getstr).then(r => {
+        console.log(r.status);
+        switch(r.status){
+          case 210:
               e_p = document.createElement("p");
-              e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
+              e_p.innerHTML = "Edit entries already exists for submission id " + submission_id + " and column '" + col_name + "'";
               var footer = "These will need manual inspection, contact Mo";
+              display_modal("Error", e_p, "danger", footer);
+              break;
+            case 220:
+              e_p = document.createElement("p");
+              e_p.innerHTML = "submission id " + submission_id + " has an edit entry tagging it for deletion.";
+              var footer = "If this is incorrect it will need manual inspection, contact Mo";
               display_modal("Error", e_p, "danger", footer);
               break;
             case 200:
               display_modal_comment();
               break;
           }
-        });
-      }); 
-    };
+      });
+    }
 
+   function on_input(evt = null, table = null, row_idx = null, col_idx = null){
+      var formid = document.getElementById("form_id").value;
+      switch($('.nav-tabs .active').attr("id")){
+        case "delete-tab":
+          on_delete_input(formid);
+          break; // end delete-tab case
+        case "edit-tab":
+          // check if data can be entered
+          // add to edit file
+          on_tsv_input(formid, evt, table, row_idx, col_idx) ;
+
+          // ask for comment
+          break; // end edit-tab case
+      }
+      display_modal_comment();
+    }
+
+    
     // Start the whole thing, grab forms!
     get_forms();
+
+    //autofocus on modal input text
+    $('#modal').on('shown.bs.modal', function () {
+      $('#comment_input').focus()
+    })
+
+    // click comment save button on enter
+    $("#comment_input").keyup(function(event) {
+      if (event.keyCode == 13) {
+        $("#comment_btn").click();
+      }
+    });
   </script>
 </html>
