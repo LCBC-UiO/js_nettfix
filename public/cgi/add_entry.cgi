@@ -14,6 +14,7 @@ declare edfile=${DATADIR}/${formid}/edits-${formid}.json
 
 status=$(Rscript --vanilla add_entry.R $edfile $submission_id $col_name $new_value)
 
-printf "Status: %s\r\n" $status
+#printf "Status: %s\r\n" $status
 printf "\r\n"
+cat $status
 cat $edfile

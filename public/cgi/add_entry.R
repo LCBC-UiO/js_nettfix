@@ -12,7 +12,7 @@ entry <- list(column = list(value = value, comment = "PLACEHOLDERCOMMENTTEXT"))
 names(entry) <- col_name
 
 ed <- jsonlite::read_json(edfile)
-status <- 405
+status <- 205
 if(submission_id %in% names(ed)){
     dt <- ed[[submission_id]]$data
     dt <- c(dt, entry)

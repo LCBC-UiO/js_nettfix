@@ -12,4 +12,5 @@ declare commentstr=$(urldecode "$comment")
 
 
 sed -i -e "s/PLACEHOLDERCOMMENTTEXT/$commentstr/g" $edfile
+rm ${edfile}-e
 cat $edfile

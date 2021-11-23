@@ -8,18 +8,28 @@ declare formid=$(echo ${QUERY_STRING:1}     | cut -d'?' -f1)
 declare checktype=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2)
 declare submission_id=$(echo ${QUERY_STRING:1}    | cut -d'?' -f3-1000)
 declare edfile=${DATADIR}/${formid}/edits-${formid}.json
-status=405
+status=200
+
+function check_submissionid(){
+  edfile="$1"
+  subids="${@:2}"
+  tmpfile=$(mktemp)
+  for s in $subids; do
+    cat $edfile | grep $s | sed  -e 's.[[:punct:]]..g' | sed -e 's.\ ..g' >> $tmpfile
+  done
+  echo $tmpfile
+}
 
 # make array of ids
 IFS='-' read -r -a subm_ids <<< "${submission_id}"
+
+
 if [ "$checktype" == "delete" ]; then
   tmpfile=$(check_submissionid $edfile ${subm_ids[@]})
   if [[ -e $edfile && -s $tmpfile ]]; then
-    status=403
+    status=203
     tr -d '\n' < $tmpfile > ${tmpfile}_n
     cat ${tmpfile}_n | sed 's/^/{"submission_id":[/' | sed 's/$/]}/' > $tmpfile
-  else
-    status=200
   fi
 elif [ "$checktype" == "edit" ]; then
   declare new_value=$(echo ${submission_id} | cut -d'?' -f3)

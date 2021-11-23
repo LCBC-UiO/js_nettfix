@@ -214,7 +214,11 @@
       e_btn.setAttribute("id", "comment_btn");
       e_btn.classList = "btn btn-primary my-2";
       e_btn.innerHTML = "Submit comment";
-      cmt_str = "on_comment('" + formid + "?" + entry.join("?") + "')";
+      if(entry != null){
+        cmt_str = "on_comment('" + formid + "?" + entry.join("?") + "')";
+      }else{
+        cmt_str = "on_comment('" + formid + "')";
+      }
       e_btn.setAttribute("onclick", cmt_str);
       e_p.appendChild(e_input);
       e_p.appendChild(e_btn);
@@ -222,7 +226,7 @@
       display_modal("Add comment", e_p, "secondary", footer)
     }
 
-    function display_modal_405(){
+    function display_modal_205(){
       e_p = document.createElement("p");
       e_p.innerHTML = "This request is not valid.";
       var footer = "Contact Mo with detailed information of what has been done.";
@@ -232,7 +236,6 @@
     ////////////////////////////////////
     //     ON USER EDIT REQUESTS      //
     function on_comment(entry=null){
-      console.log("Comment button clicked")
       var e_com = document.getElementById("comment_input").value;
       var e_p = document.createElement("p");
       switch($('.nav-tabs .active').attr("id")){
@@ -258,21 +261,20 @@
           break;
         case "edit-tab":
           let geted = "./cgi/add_entry.cgi?=" + entry ;
-          console.log(geted);
+          e_p = document.createElement("p");
           fetch(geted).then(r =>{
-          switch(r.status){
-            case 200:
-              r.json().then(function(data){
+            let getcmt = "./cgi/add_comment.cgi?=" + entry + "?" + encodeURI(e_com);
+            fetch(getcmt).then(rc =>{
+              if (!rc.ok) {
+                e_p.innerHTML = "An error occured when adding comments to the edits."
+                display_modal("Error", e_p, "danger", footer="Contact Mo for debugging.")
+              }
+              if (rc.ok) {
                 e_p.innerHTML = "Entry added!";
-                var footer = "These will need manual inspection, contact Mo";
-                display_modal("Success", e_p, "success", footer);
-              })
-              break;
-            case 405:
-              display_modal_405();
-              break;
-          }
-        })
+                display_modal("Success", e_p, "success");
+              }
+            })
+          })
           break;
       }
     }
@@ -285,9 +287,11 @@
       });
       // check is subids can be deleted
       let getstr = "./cgi/check_subid.cgi?=" + formid + "?delete?" + subid.join("-");
+      console.log(getstr);
       fetch(getstr).then(r =>{
+        console.log(r.status);
         switch(r.status){
-          case 403:
+          case 203:
             r.json().then(function(data){
               e_p = document.createElement("p");
               e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
@@ -295,8 +299,8 @@
               display_modal("Error", e_p, "danger", footer);
             })
             break;
-          case 405:
-            display_modal_405();
+          case 205:
+            display_modal_205();
             break;
         }
       })
@@ -307,21 +311,20 @@
       e_p = document.createElement("p");
       // check if data change can be added
       let getstr = "./cgi/check_subid.cgi?=" + formid + "?edit?" + entry.join("?");
-      console.log(getstr);
       fetch(getstr).then(r => {
         switch(r.status){
-          case 403:
-            e_p.innerHTML = "submission id " + submission_id + " has an edit entry tagging it for deletion.";
+          case 203:
+            e_p.innerHTML = "submission id " + entry[0] + " has an edit entry tagging it for deletion.";
             var footer = "If this is incorrect it will need manual inspection, contact Mo";
             display_modal("Error", e_p, "danger", footer);
             break;
-          case 402:
-            e_p.innerHTML = "Edit entries already exists for submission id " + submission_id + " and column '" + col_name + "'";
+          case 202:
+            e_p.innerHTML = "Edit entries already exists for submission id " + entry[0] + " and column '" + entry[1] + "'";
             var footer = "If this is incorrect it will need manual inspection, contact Mo";
             display_modal("Error", e_p, "danger", footer);
             break;
-          case 405:
-            display_modal_405();
+          case 205:
+            display_modal_205();
             break;
         }
       })

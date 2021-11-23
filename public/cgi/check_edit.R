@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
 args <- commandArgs(trailingOnly=TRUE)
-
 i <- 1
 for(var in c("edfile", "submission_id", "col_name", "value")){
     assign(var, args[i])
@@ -9,17 +8,14 @@ for(var in c("edfile", "submission_id", "col_name", "value")){
 }
 
 ed <- jsonlite::read_json(edfile)
-status <- 405
+status <- 200
 if(submission_id %in% names(ed)){
     entry <- ed[[submission_id]]$data
-    print(entry)
     if(entry == "delete"){
-        status <- 403
+        status <- 203
     }else if(col_name %in% names(entry)){
-        status <- 402
+        status <- 202
     }
-}else{
-    status <- 200
 }
 
 cat(status)
