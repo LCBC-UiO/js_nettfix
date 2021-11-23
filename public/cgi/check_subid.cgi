@@ -3,7 +3,6 @@ source utils.sh
 
 # Return is always a json
 printf "Content-Type: application/json; charset=UTF-8\r\n"
-printf "\r\n" 
 
 declare formid=$(echo ${QUERY_STRING:1}     | cut -d'?' -f1)
 declare checktype=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2)
@@ -26,14 +25,12 @@ elif [ "$checktype" == "edit" ]; then
   declare new_value=$(echo ${submission_id} | cut -d'?' -f3)
   declare col_name=$(echo ${submission_id} | cut -d'?' -f2)
   declare submission_id=$(echo ${submission_id} | cut -d'?' -f1)
-  echo $edfile $submission_id $col_name $new_value
   status=$(Rscript --vanilla check_edit.R $edfile $submission_id $col_name $new_value)
 fi
   
-#printf "Status: %s \r\n" $status
-#printf "\r\n" 
-echo $status
+printf "Status: %s \r\n" $status
+printf "\r\n" 
 cat $tmpfile
 
 # cleanup
-rm ${tmpfile}*
+rm ${tmpfile} ${tmpfile}_n
