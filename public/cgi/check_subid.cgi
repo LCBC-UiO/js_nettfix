@@ -2,7 +2,6 @@
 
 # Return is always a json
 printf "Content-Type: application/json; charset=UTF-8\r\n"
-
 declare formid=$(echo ${QUERY_STRING:1}     | cut -d'?' -f1)
 declare checktype=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2)
 declare submission_id=$(echo ${QUERY_STRING:1}    | cut -d'?' -f3-1000)
@@ -19,11 +18,9 @@ function check_submissionid(){
   echo $tmpfile
 }
 
-# make array of ids
-IFS='-' read -r -a subm_ids <<< "${submission_id}"
-
-
 if [ "$checktype" == "delete" ]; then
+  # make array of ids
+  IFS='-' read -r -a subm_ids <<< "${submission_id}"
   tmpfile=$(check_submissionid $edfile ${subm_ids[@]})
   if [[ -e $edfile && -s $tmpfile ]]; then
     status=203
@@ -35,6 +32,8 @@ elif [ "$checktype" == "edit" ]; then
   declare col_name=$(echo ${submission_id} | cut -d'?' -f2)
   declare submission_id=$(echo ${submission_id} | cut -d'?' -f1)
   status=$(Rscript --vanilla check_edit.R $edfile $submission_id $col_name $new_value)
+else
+  stats=505
 fi
   
 printf "Status: %s \r\n" $status

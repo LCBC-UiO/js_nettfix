@@ -7,14 +7,16 @@ for(var in c("edfile", "submission_id", "col_name", "value")){
     i <- i+1
 }
 
-ed <- jsonlite::read_json(edfile)
 status <- 200
-if(submission_id %in% names(ed)){
-    entry <- ed[[submission_id]]$data
-    if(entry == "delete"){
-        status <- 203
-    }else if(col_name %in% names(entry)){
-        status <- 202
+if(file.exists(edfile)){
+    ed <- jsonlite::read_json(edfile)
+    if(submission_id %in% names(ed)){
+        entry <- ed[[submission_id]]$data
+        if(entry == "delete"){
+            status <- 203
+        }else if(col_name %in% names(entry)){
+            status <- 202
+        }
     }
 }
 
