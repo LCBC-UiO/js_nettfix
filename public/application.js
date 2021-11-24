@@ -101,21 +101,39 @@
         mod_body.appendChild(body);
         mod_cont.appendChild(mod_body);
         if(footer != null){
-          mod_foot = document.createElement("div");
-          mod_foot.classList = "modal-footer";
           if(typeof footer == "string"){
+            mod_foot = document.createElement("div");
             mod_foot_sm = document.createElement("small");
             mod_foot_sm.innerHTML = footer;
-            mod_foot_sm.classList = "text-muted";
+            mod_foot_sm.classList = "text-muted text-align-right";
             mod_foot.appendChild(mod_foot_sm);
           }else{
-            mod_foot=footer;
-            mod_foot.classList.add("modal-footer");
+            mod_foot = footer;
           }
+          mod_foot.classList.add("modal-footer");
           mod_cont.appendChild(mod_foot);
         }
   
         $('#modal').modal('show');
+      }
+
+      function create_footer(data=null, text=null){
+        var ed_div = document.createElement("div");
+        ed_div.classList = "alert alert-secondary";
+        if(text != null) ed_div.innerHTML = text;
+        if(data != null){
+          e_pre = document.createElement("pre");
+          e_pre.classList = "w-100";
+          e_pre_h4 = document.createElement("h4");
+          e_pre_h4.innerHTML = "Entry json<br>";
+          e_code = document.createElement("code");
+          e_code.classList = "language-json";
+          e_code.innerHTML = JSON.stringify(data, null, 2);
+          ed_div.appendChild(e_pre_h4);
+          e_pre.appendChild(e_code);
+          ed_div.appendChild(e_pre);
+        }
+        return ed_div;
       }
   
       function display_modal_comment(formid, entry=null){
@@ -138,21 +156,6 @@
         e_p.appendChild(e_btn);
         var footer = "This will be added to each entry to describe why they have been edited";      
         display_modal("Add comment", e_p, "secondary", footer)
-      }
-  
-      function create_footer(data=null, text=null){
-        var ed_div = document.createElement("div");
-        ed_div.classList = "alert alert-secondary";
-        if(text != null) ed_div.innerHTML = text;
-        if(data != null){
-          e_pre = document.createElement("pre");
-          e_code = document.createElement("code");
-          e_code.classList = "language-json";
-          e_code.innerHTML = JSON.stringify(data, null, 2);
-          e_pre.appendChild(e_code);
-          ed_div.appendChild(e_pre);
-        }
-        return ed_div;
       }
   
       function display_modal_205(){
@@ -183,25 +186,27 @@
             });
             let getdel = "./cgi/add_deletions.cgi?=" + entry + "?" +  submission_id.join("-");
             fetch(getdel).then(r =>{
-              let getcmt = "./cgi/add_comment.cgi?=" + entry + "?" + encodeURI(e_com);
-              fetch(getcmt).then(rc =>{
-                if (!rc.ok) {
-                  e_p = document.createElement("p");
-                  e_p.innerHTML = "An error occured when adding comments to the edits."
-                  display_modal("Error", e_p, "danger", edit, "Contact Mo for debugging.");
-                }
-                if (rc.ok) {
-                  let getentry = "./cgi/get_entry.cgi?=" + formid + "?" +  submission_id.join("?");
-                  fetch(getentry).then(re => {
-                    re.json().then(data => {
-                      ed_div = create_footer(data);
-                      e_p = document.createElement("p");
-                      e_p.innerHTML = "Entries added for deletion.";
-                      display_modal("Success", e_p, "success", ed_div);
+                let getcmt = "./cgi/add_comment.cgi?=" + entry + "?" + encodeURI(e_com);
+                fetch(getcmt).then(rc =>{
+                    let title = "Success";
+                    let type = "success";
+                    let ftext = null;
+                    e_p = document.createElement("p");
+                    e_p.innerHTML = "Entries added for deletion.";
+                    if (!rc.ok) {
+                        e_p.innerHTML = "An error occured when adding comments to the edits."
+                        title = "Error";
+                        type = "danger";
+                        ftext = "Contact Mo for debugging."
+                    }
+                    let getentry = "./cgi/get_entry.cgi?=" + formid + "?" +  submission_id.join("?");
+                    fetch(getentry).then(re => {
+                        re.json().then(data => {
+                            ed_div = create_footer(data, ftext);
+                            display_modal("Success", e_p, "success", ed_div);
+                        })
                     })
-                  })
-                }
-              })
+                })
             })
             break;
           case "edit-tab":
