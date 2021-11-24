@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-source utils.sh
 
 # Return is always a json
 printf "Content-Type: application/json; charset=UTF-8\r\n"

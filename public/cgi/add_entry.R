@@ -11,20 +11,25 @@ for(var in c("edfile", "submission_id", "col_name", "value")){
 entry <- list(column = list(value = value, comment = "PLACEHOLDERCOMMENTTEXT"))
 names(entry) <- col_name
 
-ed <- jsonlite::read_json(edfile)
+if(file.exists(edfile)) ed <- jsonlite::read_json(edfile)
 status <- 205
-if(submission_id %in% names(ed)){
-    dt <- ed[[submission_id]]$data
-    dt <- c(dt, entry)
-    ed[[submission_id]]$data <- dt
-    status <- 200
+if(exists("ed")){
+    if(submission_id %in% names(ed)){
+        dt <- ed[[submission_id]]$data
+        dt <- c(dt, entry)
+        ed[[submission_id]]$data <- dt
+        status <- 200
+    }else{
+        entry <- list(sub = list(data = entry))
+        ed <- c(entry, ed)
+        names(ed)[1] <- submission_id
+        status <- 200
+    }
 }else{
-    entry <- list(sub = list(data = entry))
-    ed <- c(entry, ed)
+    ed <- list(sub = list(data = entry))
     names(ed)[1] <- submission_id
-    status <- 200
+    status <- 200  
 }
 
-invisible(
-    jsonlite::write_json(ed, edfile, pretty = TRUE, auto_unbox = TRUE)
-)
+jsonlite::write_json(ed, edfile, pretty = TRUE, auto_unbox = TRUE)
+cat(status)
