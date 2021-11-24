@@ -8,7 +8,7 @@ for(var in c("edfile", "submission_id", "col_name", "value")){
     i <- i+1
 }
 
-entry <- list(column = list(value = value, comment = "PLACEHOLDERCOMMENTTEXT"))
+entry <- list(column = list(value = URLdecode(value), comment = "PLACEHOLDERCOMMENTTEXT"))
 names(entry) <- col_name
 
 if(file.exists(edfile)) ed <- jsonlite::read_json(edfile)
