@@ -67,9 +67,10 @@ async function display_table(table, divid, ncol = null){
             const e_td = document.createElement(e_type);
             e_tr.appendChild(e_td);
             const e_input = document.createElement("input");
-            e_td.appendChild(e_input);
             e_input.type = "text";
             e_input.value = f;
+            e_input.classList = "cell-input";
+            e_td.appendChild(e_input);
             if(row_idx == 0){
                 e_input.disabled = true; //dont allow input on header
             }else{
@@ -280,7 +281,6 @@ function on_delete_input(formid){
 };
 
 function on_tsv_input(formid, entry) {
-    document.getElementById("savebtn").disabled = false;
     e_p = document.createElement("p");
     // check if data change can be added
     let getstr = "./cgi/check_subid.cgi?=" + formid + "?edit?" + entry.join("?");
@@ -327,6 +327,9 @@ function on_input(evt = null, table = null, row_idx = null, col_idx = null){
     }
     display_modal_comment(formid, entry);
 }
+
+////////////////////////////////////
+//         JQUERY MAGIC           //
     
 //autofocus on modal input text
 $('#modal').on('shown.bs.modal', function () {
@@ -334,11 +337,13 @@ $('#modal').on('shown.bs.modal', function () {
 })
 
 // click comment save button on enter
-$("#comment_input").keyup(function(event) {
+// does not work
+$('#comment_input').keyup(function(event) {
     if (event.keyCode == 13) {
-        $("#comment_btn").click();
+        $('#comment_btn').click();
     }
 });
+
 
 // Start the whole thing, grab forms!
 get_forms();
