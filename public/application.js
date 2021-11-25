@@ -67,10 +67,13 @@ async function display_table(table, divid, ncol = null){
             const e_td = document.createElement(e_type);
             e_tr.appendChild(e_td);
             const e_input = document.createElement("input");
-            e_input.classList = "form-control";
             e_input.type = "text";
             e_input.value = f;
-            e_input.classList = "cell-input";
+            e_input.classList = "cell-input form-control";
+            if(row_idx == 0){
+                e_input.classList.add("border-0")
+                e_td.classList = "border border-dark border-2";
+            }
             e_td.appendChild(e_input);
             if(row_idx == 0){
                 e_input.disabled = true; //dont allow input on header
