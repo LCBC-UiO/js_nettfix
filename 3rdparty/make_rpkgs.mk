@@ -38,20 +38,21 @@ r_pkg_deps := $(addsuffix _deps, $(patsubst %, ./r_packages/%, $(rpkgs)))
 $(r_pkg_deps): 
 
 # download
-rpkgs_dl := $(patsubst %, ./download/%.tar.gz, $(rpkgs))
-$(rpkgs_dl): ./download/%.tar.gz:
-	mkdir -p ./download/
-	@echo "download" $* "->" $(filter %$*.tar.gz, $(r_pkg_urls)) "->" $@
+
+rpkgs_dl := $(patsubst %, ./download/r_packages/%.tar.gz, $(rpkgs))
+$(rpkgs_dl): ./download/r_packages/%.tar.gz:
+	mkdir -p ./download/r_packages/
+	@echo "download/r_packages/" $* "->" $(filter %$*.tar.gz, $(r_pkg_urls)) "->" $@
 	wget $(filter %$*.tar.gz, $(r_pkg_urls)) -O $@  # the filter func returns one url
 
 # install
 rpkgs_isnt := $(patsubst %, ./r_packages/%, $(rpkgs))
 .PHONY: $(rpkgs_isnt)
-$(rpkgs_isnt): ./r_packages/%: ./download/%.tar.gz ./r_packages/%_deps
+$(rpkgs_isnt): ./r_packages/%: ./download/r_packages/%.tar.gz ./r_packages/%_deps
 	mkdir -p ./r_packages/
 	# get package name (without version string) and test if folder exists
 	test -d $(addprefix ./r_packages/, $(firstword $(subst _, , $*))) \
-		|| Rscript -e 'options(warn = 2); install.packages("./download/$*.tar.gz", lib="./r_packages/", repos=NULL)'
+		|| Rscript -e 'options(warn = 2); install.packages("./download/r_packages/$*.tar.gz", lib="./r_packages/", repos=NULL)'
 
 $(rpkgs): %: ./r_packages/%
 
@@ -65,7 +66,11 @@ rpkgs_download: $(rpkgs_dl)
 .PHONY: rpkgs_clean
 rpkgs_clean:
 	$(RM) -r ./r_packages/
-	$(RM) ./download/*.tar.gz
+
+.PHONY: rpkgs_reset
+rpkgs_reset: 
+	$(RM) -r ./download/r_packages
+	make rpkgs_clean
 
 .PHONY: rpkgs_build
 rpkgs_build:

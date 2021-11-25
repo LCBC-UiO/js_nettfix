@@ -10,11 +10,11 @@ include config_default.txt
 
 PHONY: prepare_offline
 prepare_offline:
-	make clean
+	make reset
 	make download
-	make build
-	make clean_dl
-	cd ../ && zip -FSr $(BASEDIR).zip $(BASEDIR)
+	make clean
+	cd ../ && zip -FSr $(basename $(notdir $(BASEDIR))).zip $(basename $(notdir $(BASEDIR)))
+
 
 # ------------------------------------------------------------------------------
 
@@ -33,22 +33,20 @@ run_webui:
 
 # clean
 
-.PHONY: clean_dl
-clean_dl: clean_dl
-	$(RM) -r 3rdparty/download
-
+.PHONY: reset
+reset: 
+	$(MAKE) -C 3rdparty reset
 
 .PHONY: clean
-clean: clean
+clean: 
 	$(MAKE) -C 3rdparty clean
-	make clean_dl
 
 # ------------------------------------------------------------------------------
 
 # build
 
 .PHONY: build
-build: build
+build: 
 	$(MAKE) -C 3rdparty build
 	
 # ------------------------------------------------------------------------------
@@ -56,6 +54,6 @@ build: build
 # download
 
 .PHONY: download
-download: download
+download: 
 	$(MAKE) -C 3rdparty download
 	

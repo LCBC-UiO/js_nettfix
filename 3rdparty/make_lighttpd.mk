@@ -13,7 +13,11 @@ lighttpd_build: lighttpd/sbin/lighttpd
 lighttpd_clean:
 	$(RM) -r lighttpd
 	$(RM) -r lighttpd_build
+
+.PHONY: lighttpd_reset
+lighttpd_reset:
 	$(RM) download/lighttpd-${LIBVER_lighttpd}.tar.gz
+	make lighttpd_clean
 
 download/lighttpd-${LIBVER_lighttpd}.tar.gz:
 	mkdir -p download/

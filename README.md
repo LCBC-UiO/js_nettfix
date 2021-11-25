@@ -31,12 +31,13 @@ To move into TSD, its best to start from a clean folder and then prepare for off
 make prepare_offline
 ```
 
-The necessary files will be downloaded again, the application built, and then downloaded files will be deleted to reduce the size of the content. 
+The folder will reset all files, download what is needed, and clear away all unecessary files.
 The entire folder will be zipped for easy move to TSD, and be located in the folder above the working directory, with the basename of the working directory as the zip file name.
 Usually this will ne `js_nettfix.zip`, unless the folder has been renamed on git clone.
 
 Upload the zip file into TSD, and make a tuls service to run the webapplication.
 
 ```sh
+make build
 make run_webui
 ```
