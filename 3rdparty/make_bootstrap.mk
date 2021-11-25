@@ -18,10 +18,13 @@ $(bsdsts): download/%: #to get rid of "download" prefix - no prerequisites
 
 .PHONY: bootstrap_clean
 bootstrap_clean: 
-	$(RM) -r ../public/bootstrap-5.1.3-dist
-	$(RM) download/bootstrap*
+	$(RM) ../public/bootstrap*
+	$(RM) ../public/jquery.min.js 
 
 .PHONY: bootstrap_build
 bootstrap_build: 
-	unzip  download/bootstrap-5.1.3-dist.zip -d ../public/
-	cp download/jquery.min.js ../public/
+	unzip -o download/bootstrap-5.1.3-dist.zip -d download/
+	cp -v download/bootstrap-5.1.3-dist/js/bootstrap.bundle.min* ../public
+	cp -v download/bootstrap-5.1.3-dist/css/bootstrap.min* ../public
+	cp -v download/jquery.min.js ../public
+

@@ -14,9 +14,8 @@ all: $(addsuffix _build, $(modules))
 .PHONY: download
 download: $(addsuffix _download, $(modules))
 
-.PHONY: cclean
-cclean: $(addsuffix _clean, $(modules))
-	rm -r download
+.PHONY: clean
+clean: $(addsuffix _clean, $(modules))
 
 .PHONY: build
 build: $(addsuffix _build, $(modules))

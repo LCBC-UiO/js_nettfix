@@ -7,7 +7,7 @@ These edits are stored in json files along side the original data on the local f
 
 To prepare the application to run, you will need to download all the necessary components.
 ```sh
-make prepare_offline
+make download
 ```
 
 And then build the necessary tools.
@@ -20,24 +20,23 @@ Then run the instance with
 ```sh
 make run_webui
 ```
-The web application will be running on port `3222`.
+
+The web application will by default be running on port `3222`, using the test data in the [data](data/) folder.
 
 
 ## Preparing to move into TSD
 To move into TSD, its best to start from a clean folder and then prepare for offline work.
 
 ```sh
-make clean
 make prepare_offline
 ```
 
-Zip the folder and move it into TSD, and place it in the LCBC TULS folder.
-From there, build the appliation
-```sh
-make build
-```
+The necessary files will be downloaded again, the application built, and then downloaded files will be deleted to reduce the size of the content. 
+The entire folder will be zipped for easy move to TSD, and be located in the folder above the working directory, with the basename of the working directory as the zip file name.
+Usually this will ne `js_nettfix.zip`, unless the folder has been renamed on git clone.
 
-And make a tuls service to run the webapplication.
+Upload the zip file into TSD, and make a tuls service to run the webapplication.
+
 ```sh
 make run_webui
 ```

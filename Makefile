@@ -6,11 +6,15 @@ include config_default.txt
 
 # ------------------------------------------------------------------------------
 
-# build
+# prepare for TSD
 
 PHONY: prepare_offline
 prepare_offline:
-	make -C 3rdparty download
+	make clean
+	make download
+	make build
+	make clean_dl
+	cd ../ && zip -FSr $(BASEDIR).zip $(BASEDIR)
 
 # ------------------------------------------------------------------------------
 
@@ -29,9 +33,15 @@ run_webui:
 
 # clean
 
+.PHONY: clean_dl
+clean_dl: clean_dl
+	$(RM) -r 3rdparty/download
+
+
 .PHONY: clean
 clean: clean
-	$(MAKE) -C 3rdparty cclean
+	$(MAKE) -C 3rdparty clean
+	make clean_dl
 
 # ------------------------------------------------------------------------------
 
@@ -40,4 +50,12 @@ clean: clean
 .PHONY: build
 build: build
 	$(MAKE) -C 3rdparty build
-	cp -r 3rdparty/download/bootstrap* ${DOCROOT}
+	
+# ------------------------------------------------------------------------------
+
+# download
+
+.PHONY: download
+download: download
+	$(MAKE) -C 3rdparty download
+	
