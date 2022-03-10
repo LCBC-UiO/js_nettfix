@@ -67,10 +67,13 @@ async function display_table(table, divid, ncol = null){
             const e_input = document.createElement("input");
             e_input.type = "text";
             e_input.value = f;
+            if(divid == "deltsv"){
+                e_input.disabled = true;
+            }
             e_input.classList = "cell-input form-control";
             if(row_idx == 0){
                 e_input.classList.add("border-0")
-                e_td.classList = "border border-dark border-2";
+                e_td.classList = "border border-dark border-2  table-th ";
             }
             e_td.appendChild(e_input);
             if(row_idx == 0){
