@@ -52,9 +52,7 @@ async function display_table(table, divid, ncol = null){
         const e_tr = document.createElement("tr");
         if(row_idx == 0){ // make table header
             const e_thead = document.createElement("thead");
-            e_thead.classList.add("thead-primary");
-            e_thead.classList.add("bg-primary");
-            e_thead.classList.add("text-white");
+            e_thead.classList = "thead-primary bg-primary text-white";
             e_thead.appendChild(e_tr);
             e_table.appendChild(e_thead);
             var e_type = "th";

@@ -66,14 +66,18 @@
         <div class="tab-pane fade my-3" id="delete" role="tabpanel" aria-labelledby="delete-tab">
           <div class="row flex-nowrap">
             <div class="col-2">
-              <p>Submission id(s) to delete:</p>
-              <select class="row btn btn-secondary dropdown-toggle" id="submission_id" multiple></select>
+              <p>Select submission(s) to delete from the list:</p>
+              <select class="row btn btn-secondary dropdown-toggle" id="submission_id" multiple size="20" style="width: 100%;"></select>
               <small class="row text-muted">Select multiple entries by pressing ctrl or cmd</small>
+              <button id="delbtn" class="btn btn-primary my-3" onclick=on_input()>Delete submissions</button>
             </div>
-            <div class="col-6" id="deltsv" class="table table-responsive my-3" disabled=true></div>
+            <div class="col-6">
+              <p>Data preview</p>
+              <div id="deltsv" class="table table-responsive my-3" disabled=true>
+              </div>
+            </div>
           </div>
           <div class="row">
-            <button id="delbtn" class="btn btn-primary my-3" onclick=on_input()>Save edits</button>
           </div>
         </div>
       </div>
