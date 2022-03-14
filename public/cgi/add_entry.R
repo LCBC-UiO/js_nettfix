@@ -8,10 +8,15 @@ for(var in c("edfile", "submission_id", "col_name", "value")){
     i <- i+1
 }
 
+get_datetime <- function(){
+    x <- Sys.time()
+    x <- as.POSIXlt(x, "UTC")
+    format(x, format = "%Y-%m-%dT%H:%M:%S")
+}
 # create a list entry
 entry <- list(column = list(value   = URLdecode(value), 
                             comment = "PLACEHOLDERCOMMENTTEXT",
-                            date    = as.POSIXlt(Sys.time(), "UTC")
+                            date    = get_datetime()
                             ))
 names(entry) <- col_name
 

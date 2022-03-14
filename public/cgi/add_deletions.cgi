@@ -16,7 +16,7 @@ printf '  "%s": {
     "data"   : "delete",
     "comment": "PLACEHOLDERCOMMENTTEXT",
     "date"   : "%s"
-  }' ${subm_ids[$i]} $(date +%Y-%m-%dT%T ) >> $tmpfile
+  }' ${subm_ids[$i]} $(date -u +%Y-%m-%dT%T ) >> $tmpfile
 done
 
 # TODO: detect existing edit file
