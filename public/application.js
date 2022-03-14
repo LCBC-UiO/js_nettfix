@@ -222,7 +222,7 @@ function on_comment(entry=null){
     var formid = entry.split("?")[0];
     let title  = "Success";
     let type   = "success";
-    let ftext  = null;
+    let ftext  = "Changes should be implemented within 2 hours.";
     let submission_id = null;
     var e_p = document.createElement("p");
     switch($('.nav-tabs .active').attr("id")){
