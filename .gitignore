@@ -5,7 +5,7 @@ package.json
 3rdparty/lighttpd
 3rdparty/r_packages
 3rdparty/jq*
-public/bootstrap*
+public/bootstrap/
 public/js/jquery*
 data/99999/edit*
 .DS_Store
