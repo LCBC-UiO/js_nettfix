@@ -37,7 +37,8 @@ bootstrap_reset:
 
 .PHONY: bootstrap_build
 bootstrap_build: 
-	cp -v download/bootstrap.bundle.min* ../public
-	cp -v download/bootstrap.min* ../public
-	cp -v download/jquery.min.js ../public
+	mkdir -p ../public/bootstrap 
+	cp -v download/bootstrap.bundle.min* ../public/bootstrap 
+	cp -v download/bootstrap.min* ../public/bootstrap 
+	cp -v download/jquery.min.js ../public/js/ 
 
