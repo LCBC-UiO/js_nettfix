@@ -289,25 +289,38 @@ function on_delete_input(formid){
     });
     // check is subids can be deleted
     let getstr = "./cgi/check_subid.cgi?=" + formid + "?delete?" + submission_id.join("-");
+    let getentry = "./cgi/get_entry.cgi?=" + formid + "?" + submission_id;
+    console.log(getstr)
     fetch(getstr).then(r =>{
         switch(r.status){
-        case 203:
-            r.json().then(function(data){
-            e_p = document.createElement("p");
-            e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
-            let getentry = "./cgi/get_entry.cgi?=" + formid + "?" + submission_id;
-            fetch(getentry).then(re => {
-                re.json().then(data => {
-                    ed_div = create_footer(data, "These will need manual inspection, contact Mo");
-                    display_modal("Error", e_p, "danger", ed_div);
+            case 202:
+                r.json().then(function(data){
+                    e_p = document.createElement("p");
+                    e_p.innerHTML = "Delete entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
+                    fetch(getentry).then(re => {
+                        re.json().then(data => {
+                            ed_div = create_footer(data, "If these were done more than two hours ago and still appear in the data, notify Mo");
+                            display_modal("No action needed", e_p, "info", ed_div);
+                        })
+                    })
                 })
-            })
-            })
-            break;
-        case 205:
-            display_modal_205();
-            break;
-        }
+                break;
+            case 203:
+                r.json().then(function(data){
+                    e_p = document.createElement("p");
+                    e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
+                    fetch(getentry).then(re => {
+                        re.json().then(data => {
+                            ed_div = create_footer(data, "These will need manual inspection, contact Mo");
+                            display_modal("Error", e_p, "danger", ed_div);
+                        })
+                    })
+                })
+                break;
+            case 205:
+                display_modal_205();
+                break;
+            }
     })
 };
 

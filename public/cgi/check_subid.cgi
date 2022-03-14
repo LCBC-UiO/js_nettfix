@@ -26,6 +26,10 @@ if [ "$checktype" == "delete" ]; then
     status=203
     tr -d '\n' < $tmpfile > ${tmpfile}_n
     cat ${tmpfile}_n | sed 's/^/{"submission_id":[/' | sed 's/$/]}/' > $tmpfile
+    tmpcont=$(Rscript --vanilla get_entry.R $edfile $submission_id)
+    if [[ $tmpcont =~ '"data": "delete"' ]]; then
+      status=202
+    fi
   fi
 elif [ "$checktype" == "edit" ]; then
   declare new_value=$(echo ${submission_id} | cut -d'?' -f3)
