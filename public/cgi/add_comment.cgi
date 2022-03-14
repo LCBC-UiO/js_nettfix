@@ -10,7 +10,6 @@ declare edfile=${DATADIR}/${formid}/edits-${formid}.json
 declare comment=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2-1000)
 declare commentstr=$(urldecode "$comment")
 
-
 sed -i -e "s/PLACEHOLDERCOMMENTTEXT/$commentstr/g" $edfile
 rm ${edfile}-e
 cat $edfile
