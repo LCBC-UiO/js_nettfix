@@ -91,6 +91,7 @@ function display_modal(title, body, type, footer=null){
     mod.innerHTML = "";
     mod_diag = document.createElement("div");
     mod_diag.classList = "modal-dialog";
+    mod_diag.setAttribute("role", "document");
     mod.appendChild(mod_diag);
     mod_cont = document.createElement("div");
     mod_cont.classList = "modal-content";
@@ -102,6 +103,15 @@ function display_modal(title, body, type, footer=null){
     mod_h4.classList = "text-" + type;
     mod_h4.innerHTML = title;
     mod_head.appendChild(mod_h4);
+    mod_dismiss = document.createElement("button");
+    mod_dismiss.classList = "btn close";
+    mod_dismiss.setAttribute("aria-label", "Close");
+    mod_dismiss.setAttribute("data-bs-dismiss", "modal");
+    mod_dismiss_span = document.createElement("span");
+    mod_dismiss_span.innerHTML = "&times;"
+    mod_dismiss_span.setAttribute("aria-hidden", "true");
+    mod_dismiss.appendChild(mod_dismiss_span);
+    mod_head.appendChild(mod_dismiss);
     mod_body = document.createElement("div");
     mod_body.classList = "modal-body alert alert-" + type;
     mod_body.appendChild(body);
