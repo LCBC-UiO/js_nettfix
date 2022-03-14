@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# Return is always a json
-printf "Content-Type: application/json; charset=UTF-8\r\n"
 declare formid=$(echo ${QUERY_STRING:1}     | cut -d'?' -f1)
 declare checktype=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2)
 declare submission_id=$(echo ${QUERY_STRING:1}    | cut -d'?' -f3-1000)
