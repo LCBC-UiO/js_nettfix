@@ -6,7 +6,7 @@ package.json
 3rdparty/r_packages
 3rdparty/jq*
 public/bootstrap*
-public/jquery*
+public/js/jquery*
 data/99999/edit*
 .DS_Store
 .Rhistory
