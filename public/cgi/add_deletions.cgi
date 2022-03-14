@@ -14,8 +14,9 @@ for (( i=0; i<${#subm_ids[@]}; i++ )); do
   if [ $i -ne  0 ]; then printf ',\n'; fi >> $tmpfile
 printf '  "%s": { 
     "data"   : "delete",
-    "comment": "PLACEHOLDERCOMMENTTEXT"
-  }' ${subm_ids[$i]} >> $tmpfile
+    "comment": "PLACEHOLDERCOMMENTTEXT",
+    "date"   : "%s"
+  }' ${subm_ids[$i]} $(date +%Y-%m-%dT%T ) >> $tmpfile
 done
 
 # TODO: detect existing edit file
