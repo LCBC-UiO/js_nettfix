@@ -37,9 +37,10 @@ elif [ "$checktype" == "edit" ]; then
   declare submission_id=$(echo ${submission_id} | cut -d'?' -f1)
   status=$(Rscript --vanilla check_edit.R $edfile $submission_id $col_name $new_value)
 else
-  stats=505
+  status=505
 fi
-  
+
+printf "Content-Type: application/json; charset=UTF-8\r\n"
 printf "Status: %s \r\n" $status
 printf "\r\n" 
 cat $tmpfile
