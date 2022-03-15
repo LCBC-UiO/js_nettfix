@@ -25,7 +25,7 @@ $(bsdsts): download/%: #to get rid of "download" prefix - no prerequisites
 
 .PHONY: bootstrap_clean
 bootstrap_clean: 
-	$(RM) ../public/bootstrap*
+	$(RM) -r ../public/bootstrap/
 	$(RM) ../public/jquery.min.js 
 
 .PHONY: bootstrap_reset
