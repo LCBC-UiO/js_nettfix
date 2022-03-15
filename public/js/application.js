@@ -19,7 +19,7 @@
 
 async function get_tsv(){
     var formid = document.getElementById("form_id").value;
-    var getstr = "./cgi/get_form_csv.cgi?=" + formid;
+    var getstr = `./cgi/get_form_csv.cgi?=${formid}`;
     const r = await fetch(getstr);
     if (!r.ok) {
         console.log("error ok");

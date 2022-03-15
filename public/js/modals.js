@@ -13,7 +13,7 @@ function display_modal(title, body, type, footer=null){
     mod_head.classList = "modal-header";
     mod_cont.appendChild(mod_head);
     mod_h4 = document.createElement("h4");
-    mod_h4.classList = "text-" + type;
+    mod_h4.classList = `text-${type}`;
     mod_h4.innerHTML = title;
     mod_head.appendChild(mod_h4);
     mod_dismiss = document.createElement("button");
@@ -26,7 +26,7 @@ function display_modal(title, body, type, footer=null){
     mod_dismiss.appendChild(mod_dismiss_span);
     mod_head.appendChild(mod_dismiss);
     mod_body = document.createElement("div");
-    mod_body.classList = "modal-body alert alert-" + type;
+    mod_body.classList = `modal-body alert alert-${type}`;
     mod_body.appendChild(body);
     mod_cont.appendChild(mod_body);
     if(footer != null){

@@ -13,9 +13,9 @@ function on_comment(entry=null){
             submission_id = Array.prototype.slice.call(sid,0).map(function(v) { 
                 return v.value; 
             });
-            let getdel = "./cgi/add_deletions.cgi?=" + entry + "?" +  submission_id.join("-");
+            let getdel = `./cgi/add_deletions.cgi?=${entry}?${submission_id.join("-")}`;
             fetch(getdel).then(r =>{
-                let getcmt = "./cgi/add_comment.cgi?=" + entry + "?" + encodeURI(e_com);
+                let getcmt = `./cgi/add_comment.cgi?=${entry}?${encodeURI(e_com)}`;
                 fetch(getcmt).then(rc =>{
                     e_p.innerHTML = "Entries added for deletion.";
                     if (!rc.ok) {
@@ -24,10 +24,10 @@ function on_comment(entry=null){
                         type  = "danger";
                         ftext = "Contact Mo for debugging."
                     }
-                    let getentry = "./cgi/get_entry.cgi?=" + formid + "?" + submission_id;
+                    let getentry = `./cgi/get_entry.cgi?=${formid}?${submission_id}`;
                     fetch(getentry).then(re => {
                         re.json().then(data => {
-                            ed_div = create_footer(data, ftext);
+                            ed_div = create_modal_footer(data, ftext);
                             display_modal(title, e_p, type, ed_div);
                         })
                     })
@@ -38,9 +38,9 @@ function on_comment(entry=null){
         case "edit-tab":
             entry = entry.split("?")
             entry[3] = encodeURI(document.getElementById("value_input").value);
-            let geted = "./cgi/add_entry.cgi?=" + entry.join("?") ;
+            let geted = `./cgi/add_entry.cgi?=${entry.join("?")}`;
             fetch(geted).then(r =>{
-                let getcmt = "./cgi/add_comment.cgi?=" + formid + "?" + encodeURI(e_com);
+                let getcmt = `./cgi/add_comment.cgi?=${formid}?${encodeURI(e_com)}`;
                 e_p.innerHTML = "Entry added.";
                 fetch(getcmt).then(rc =>{
                     if (!rc.ok) {
@@ -49,10 +49,10 @@ function on_comment(entry=null){
                         type  = "danger";
                         ftext = "Contact Mo for debugging."
                     }
-                    let getentry = "./cgi/get_entry.cgi?=" + formid + "?" + submission_id;
+                    let getentry = `./cgi/get_entry.cgi?=${formid}?${submission_id}`;
                     fetch(getentry).then(re => {
                         re.json().then(data => {
-                            ed_div = create_footer(data, ftext);
+                            ed_div = create_modal_footer(data, ftext);
                             display_modal(title, e_p, type, ed_div);
                         })
                     })
@@ -70,18 +70,17 @@ function on_delete_input(formid){
         return v.value; 
     });
     // check is subids can be deleted
-    let getstr = "./cgi/check_subid.cgi?=" + formid + "?delete?" + submission_id.join("-");
-    let getentry = "./cgi/get_entry.cgi?=" + formid + "?" + submission_id;
-    console.log(getstr)
+    let getstr = `./cgi/check_subid.cgi?=${formid}?delete?${submission_id.join("-")}`;
+    let getentry = `./cgi/get_entry.cgi?=${formid}?${submission_id}`;
     fetch(getstr).then(r =>{
         switch(r.status){
             case 202:
                 r.json().then(function(data){
                     e_p = document.createElement("p");
-                    e_p.innerHTML = "Delete entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
+                    e_p.innerHTML = `Delete entries already exists for submission id(s):<br>${data.submission_id.join(", ")}`;
                     fetch(getentry).then(re => {
                         re.json().then(data => {
-                            ed_div = create_footer(data, "If these were done more than two hours ago and still appear in the data, notify Mo");
+                            ed_div = create_modal_footer(data, "If these were done more than two hours ago and still appear in the data, notify Mo");
                             display_modal("No action needed", e_p, "info", ed_div);
                         })
                     })
@@ -90,10 +89,10 @@ function on_delete_input(formid){
             case 203:
                 r.json().then(function(data){
                     e_p = document.createElement("p");
-                    e_p.innerHTML = "Edit entries already exists for submission id(s):<br>" + data.submission_id.join(", ");
+                    e_p.innerHTML = `Edit entries already exists for submission id(s):<br>${data.submission_id.join(", ")}`;
                     fetch(getentry).then(re => {
                         re.json().then(data => {
-                            ed_div = create_footer(data, "These will need manual inspection, contact Mo");
+                            ed_div = create_modal_footer(data, "These will need manual inspection, contact Mo");
                             display_modal("Error", e_p, "danger", ed_div);
                         })
                     })
@@ -109,14 +108,14 @@ function on_delete_input(formid){
 function on_tsv_input(formid, entry) {
     e_p = document.createElement("p");
     // check if data change can be added
-    let getstr = "./cgi/check_subid.cgi?=" + formid + "?edit?" + entry.join("?");
+    let getstr = `./cgi/check_subid.cgi?=${formid}?edit?${entry.join("?")}`;
     let submission_id = entry[0];
     fetch(getstr).then(r => {
-        let getentry = "./cgi/get_entry.cgi?=" + formid + "?" + submission_id;
+        let getentry = `./cgi/get_entry.cgi?=${formid}?${submission_id}`;
         fetch(getentry).then(re => {
             switch(r.status){
                 case 203:
-                    e_p.innerHTML = "submission id " + submission_id + " has an edit entry tagging it for deletion.";
+                    e_p.innerHTML = `submission id '${submission_id}' has an edit entry tagging it for deletion.`;
                     re.json().then(data => {
                         e_div_foot = document.createElement("div");
                         e_div_foot_p = document.createElement("p")
@@ -129,12 +128,12 @@ function on_tsv_input(formid, entry) {
                         e_div_foot_btn.classList = "btn btn-danger";
                         e_div_foot_btn.innerHTML = "Override edits";
                         e_div_foot.appendChild(e_div_foot_btn);
-                        ed_div = create_footer(data, e_div_foot);
+                        ed_div = create_modal_footer(data, e_div_foot);
                         display_modal("Error", e_p, "danger", ed_div);
                     })
                     break;
                 case 202:
-                    e_p.innerHTML = "Edit entries already exists for submission id " + submission_id + " and column '" + entry[1] + "'";
+                    e_p.innerHTML = `An edit entry already exists for submission id ${submission_id} and column '${entry[1]}'`;
                     re.json().then(data => {
                         e_div_foot = document.createElement("div");
                         e_div_foot_p = document.createElement("p")
@@ -147,10 +146,10 @@ function on_tsv_input(formid, entry) {
                         e_div_foot_btn = document.createElement("button");
                         e_div_foot_btn.classList = "btn btn-danger";
                         e_div_foot_btn.innerHTML = "Override edits";
-                        let cmd = "display_modal_override(" + formid + ", '" + entry.join("??") + "')";
+                        let cmd = `display_modal_override(${formid}, '${entry.join("??")}')`;
                         e_div_foot_btn.setAttribute("onclick", cmd);
                         e_div_foot.appendChild(e_div_foot_btn);
-                        ed_div = create_footer(data, e_div_foot);
+                        ed_div = create_modal_footer(data, e_div_foot);
                         display_modal("Error", e_p, "danger", ed_div);
                     })
                     break;
