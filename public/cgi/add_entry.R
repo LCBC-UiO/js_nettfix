@@ -25,10 +25,27 @@ if(file.exists(edfile)) ed <- jsonlite::read_json(edfile)
 status <- 205
 if(exists("ed")){
     status <- 200
-    # if the submission id already has other edits, add this one to the list
+    # if the submission id already has other edits
     if(submission_id %in% names(ed)){
-        # grab existin edits for submission id
+        # grab existing edits for submission id
         dt <- ed[[submission_id]]$data
+        # if data exists, delete (for overriding)
+        if(col_name %in% names(dt)){
+            # add old data to "log" element
+            if("log" %in% names(dt[[col_name]])){
+                log_idx <- which(names(dt[[col_name]]) %in% "log")
+                log <- dt[[col_name]][[log_idx]]
+                tmp <- dt[[col_name]][log_idx*-1]
+                log <- list(c(list(tmp), log))
+                print(log)
+            }else{
+                log <- list(list(dt[[col_name]]))
+            }
+            new_entry <- c(entry[[col_name]], log = log)
+            entry <- list(new_entry)
+            names(entry) <- col_name
+            dt[[col_name]] <- NULL
+        }
         # append new edits to old, and rewrite data entry
         ed[[submission_id]]$data <- c(dt, entry)
     }else{

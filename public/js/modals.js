@@ -44,27 +44,49 @@ function display_modal(title, body, type, footer=null){
     $('#modal').modal('show');
 }
 
-function display_modal_comment(formid, entry=null, header = "Add entry information", alert = "secondary"){
+function display_modal_comment(formid, 
+    entry = null, 
+    header = "Add entry information", 
+    alert = "secondary",
+    ftext = null
+    ){
     e_p = document.createElement("div");
-    e_input = create_input("comment", "comment_input")
-    if($('.nav-tabs .active').attr("id") == "edit-tab"){
-        e_inputv = create_input("value", "value_input")
-        e_p.appendChild(e_inputv);
+    type = $('.nav-tabs .active').attr("id");
+    if(alert == "warning"){
+        type = "warning"
+    }
+    switch(type){
+        case "edit-tab":
+            e_inputv = create_input("value", "value_input")
+            e_p.appendChild(e_inputv);
+            ftext = "This will be added to the entry to explain the edit."
+            break;
+        case "delete-tab":
+            ftext = "This will be added to each entry to describe why they have been deleted"
+            break;
+        case "warning":
+            e_p_p = document.createElement("p");
+            e_p_p.innerHTML = "You are overriding existing edits. Be careful."
+            e_p.appendChild(e_p_p);
+            e_inputv = create_input("value", "value_input")
+            e_p.appendChild(e_inputv);
+            break;
     }
     e_btn = document.createElement("button");
     e_btn.setAttribute("id", "comment_btn");
-    e_btn.classList = "btn btn-secondary primary my-2";
+    e_btn.classList = "btn btn-dark my-2";
     e_btn.innerHTML = "Submit entry";
+    let submit = [formid];
     if(entry != null){
-        cmt_str = "on_comment('" + formid + "?" + entry.join("?") + "')";
-    }else{
-        cmt_str = "on_comment('" + formid + "')";
+        submit = submit.concat(entry);
     }
-    e_btn.setAttribute("onclick", cmt_str);
+    cmd_str = `on_comment('${submit.join("?")}')`;
+    console.log(cmd_str);
+    e_btn.setAttribute("onclick", cmd_str);
+    e_input = create_input("comment", "comment_input")
     e_p.appendChild(e_input);
     e_p.appendChild(e_btn);
-    var footer = "This will be added to each entry to describe why they have been edited";      
-    display_modal(header, e_p, alert, footer)
+    display_modal(header, e_p, alert, ftext)
 }
 
 function display_modal_205(){
@@ -80,12 +102,12 @@ function display_modal_override(formid, entry){
     switch($('.nav-tabs .active').attr("id")){
         case "edit-tab":
             ftitle = "Overriding edit";
-            ftext  = `This is the current data entry. What you enter above will replace the value and comment for ${entry[1]}`;
+            ftext  = `This is the current data entry. What you enter above will replace the value and comment for '${entry[1]}'`;
             break;
-        case "delete-tab":
-            ftitle = "Overriding deletion";
-            ftext  = `This is the current data entry. What you enter above will remove all edits and change the comments.`;
-            break;
+       // case "delete-tab":
+       //     ftitle = "Overriding deletion";
+       //     ftext  = `This is the current data entry. What you enter above will remove all edits and change the comments.`;
+       //     break;
     }
     fetch(getentry).then(re => {
         re.json().then(data => {

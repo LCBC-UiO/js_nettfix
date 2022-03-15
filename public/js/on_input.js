@@ -40,11 +40,17 @@ function on_comment(entry=null){
             entry[3] = encodeURI(document.getElementById("value_input").value);
             let geted = `./cgi/add_entry.cgi?=${entry.join("?")}`;
             fetch(geted).then(r =>{
-                let getcmt = `./cgi/add_comment.cgi?=${formid}?${encodeURI(e_com)}`;
                 e_p.innerHTML = "Entry added.";
+                if (!r.ok) {
+                    e_p.innerHTML = "An error occured when adding comments to the edits."
+                    title = "Error";
+                    type  = "danger";
+                    ftext = "Contact Mo for debugging."
+                }
+                let getcmt = `./cgi/add_comment.cgi?=${formid}?${encodeURI(e_com)}`;
                 fetch(getcmt).then(rc =>{
                     if (!rc.ok) {
-                        e_p.innerHTML = "An error occured when adding comments to the edits."                
+                        e_p.innerHTML = "An error occured when adding comments to the edits."
                         title = "Error";
                         type  = "danger";
                         ftext = "Contact Mo for debugging."
@@ -92,7 +98,7 @@ function on_delete_input(formid){
                     e_p.innerHTML = `Edit entries already exists for submission id(s):<br>${data.submission_id.join(", ")}`;
                     fetch(getentry).then(re => {
                         re.json().then(data => {
-                            ed_div = create_modal_footer(data, "These will need manual inspection, contact Mo");
+                            ed_div = create_modal_footer(data, "These will need manual inspection, cannot override yet. Contact Mo");
                             display_modal("Error", e_p, "danger", ed_div);
                         })
                     })
@@ -120,15 +126,19 @@ function on_tsv_input(formid, entry) {
                         e_div_foot = document.createElement("div");
                         e_div_foot_p = document.createElement("p")
                         e_div_foot_p.innerHTML = "If this is incorrect, you may choose to override it.";
-                        e_div_foot_p_small = document.createElement("small");
-                        e_div_foot_p_small.innerHTML = "Note that this will permanently erase all previous edits.";
-                        e_div_foot_p_small.classList = "text text-muted";
                         e_div_foot.appendChild(e_div_foot_p);
+                        e_div_foot_p_small = document.createElement("small");
+                        e_div_foot_p_small.innerHTML = "Note that this will permanently let the data enter the NOAS again.";
+                        e_div_foot_p_small.classList = "text text-muted";
+                        e_div_foot.appendChild(e_div_foot_p_small);
                         e_div_foot_btn = document.createElement("button");
                         e_div_foot_btn.classList = "btn btn-danger";
-                        e_div_foot_btn.innerHTML = "Override edits";
+                        e_div_foot_btn.innerHTML = "Override deletion";
+                        let cmd = `display_modal_override(${formid}, '${entry.join("??")}')`;
+                        e_div_foot_btn.setAttribute("onclick", cmd);
                         e_div_foot.appendChild(e_div_foot_btn);
                         ed_div = create_modal_footer(data, e_div_foot);
+                        ed_div = "Deletions cannot be fixed via Nettfix, yet. Contact Mo if urgent";
                         display_modal("Error", e_p, "danger", ed_div);
                     })
                     break;
