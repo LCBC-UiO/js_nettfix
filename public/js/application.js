@@ -95,40 +95,6 @@ async function trigger_table(){
 
 ////////////////////////////////////
 //       CREATE DOM ELEMENTS      //
-function create_footer(data=null, bottom_div=null){
-    var ed_div = document.createElement("div");
-    ed_div.classList = "alert alert-secondary";
-    if(data != null){
-        e_pre = document.createElement("pre");
-        e_pre.classList = "w-100 border border-white border-2";
-        e_pre_h4 = document.createElement("h4");
-        e_pre_h4.innerHTML = "Entry json";
-        e_pre_h4.classList = "my-2 w-100 text-muted";
-        e_code = document.createElement("code");
-        e_code.classList = "language-json text-muted";
-        e_code.innerHTML = JSON.stringify(data, null, 2);
-        ed_div.appendChild(e_pre_h4);
-        e_pre.appendChild(e_code);
-        ed_div.appendChild(e_pre);
-    }
-    if( data != null && bottom_div != null){
-        e_hr = document.createElement("hr");
-        e_hr.classList = "border-2 border-top border-dark w-100";
-        ed_div.appendChild(e_hr);
-    }
-    if(bottom_div != null){
-        if (typeof bottom_div === 'string'){
-            e_p2 = document.createElement("p");
-            e_p2.classList = "my-2 w-100";
-            e_p2.innerHTML = bottom_div;
-        }else{
-            e_p2 = bottom_div;
-        }
-        ed_div.appendChild(e_p2);
-    }
-    return ed_div;
-}
-
 function create_input(char, name){
     i_div = document.createElement("div");
     i_div.classList = "input-group mb-3";
