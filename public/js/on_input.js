@@ -1,5 +1,5 @@
 function on_comment(entry=null){
-    var e_com  = document.getElementById("comment_input").value;
+    var e_com  = encodeURI(document.getElementById("comment_input").value);
     var e_p    = document.createElement("p");
     var formid = entry.split("?")[0];
     let title  = "Success";
@@ -15,7 +15,7 @@ function on_comment(entry=null){
             });
             let getdel = `./cgi/add_deletions.cgi?=${entry}?${submission_id.join("-")}`;
             fetch(getdel).then(r =>{
-                let getcmt = `./cgi/add_comment.cgi?=${entry}?${encodeURI(e_com)}`;
+                let getcmt = `./cgi/add_comment.cgi?=${entry}?${e_com}`;
                 fetch(getcmt).then(rc =>{
                     e_p.innerHTML = "Entries added for deletion.";
                     if (!rc.ok) {
@@ -38,7 +38,7 @@ function on_comment(entry=null){
         case "edit-tab":
             entry = entry.split("?")
             entry[3] = encodeURI(document.getElementById("value_input").value);
-            let geted = `./cgi/add_entry.cgi?=${entry.join("?")}`;
+            let geted = `./cgi/add_entry.cgi?=${entry.join("?")}?${e_com}`;
             fetch(geted).then(r =>{
                 e_p.innerHTML = "Entry added.";
                 if (!r.ok) {
@@ -106,10 +106,11 @@ function on_tsv_input(formid, entry) {
     let submission_id = entry[0];
     fetch(getstr).then(r => {
         let getentry = `./cgi/get_entry.cgi?=${formid}?${submission_id}`;
+        console.log(getentry)
         fetch(getentry).then(re => {
             switch(r.status){
                 case 203:
-                    e_p.innerHTML = `submission id '${submission_id}' has an edit entry tagging it for deletion.`;
+                    e_p.innerHTML = `submission id '${submission_id}' has an edit tagging it for deletion.`;
                     re.json().then(data => {
                         e_div_foot = document.createElement("div");
                         e_div_foot_p = document.createElement("p")
