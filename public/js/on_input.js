@@ -47,21 +47,9 @@ function on_comment(entry=null){
                     type  = "danger";
                     ftext = "Contact Mo for debugging."
                 }
-                let getcmt = `./cgi/add_comment.cgi?=${formid}?${encodeURI(e_com)}`;
-                fetch(getcmt).then(rc =>{
-                    if (!rc.ok) {
-                        e_p.innerHTML = "An error occured when adding comments to the edits."
-                        title = "Error";
-                        type  = "danger";
-                        ftext = "Contact Mo for debugging."
-                    }
-                    let getentry = `./cgi/get_entry.cgi?=${formid}?${submission_id}`;
-                    fetch(getentry).then(re => {
-                        re.json().then(data => {
-                            ed_div = create_modal_footer(data, ftext);
-                            display_modal(title, e_p, type, ed_div);
-                        })
-                    })
+                r.json().then(data => {
+                    ed_div = create_modal_footer(data, ftext);
+                    display_modal(title, e_p, type, ed_div);
                 })
             })
             submission_id = entry[1];
