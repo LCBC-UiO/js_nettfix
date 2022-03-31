@@ -81,7 +81,6 @@ function display_modal_comment(formid,
         submit = submit.concat(entry);
     }
     cmd_str = `on_comment('${submit.join("?")}')`;
-    console.log(cmd_str);
     e_btn.setAttribute("onclick", cmd_str);
     e_input = create_input("comment", "comment_input")
     e_p.appendChild(e_input);
