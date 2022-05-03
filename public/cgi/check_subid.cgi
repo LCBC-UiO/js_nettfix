@@ -4,7 +4,7 @@ declare formid=$(echo ${QUERY_STRING:1}     | cut -d'?' -f1)
 declare checktype=$(echo ${QUERY_STRING:1}  | cut -d'?' -f2)
 declare submission_id=$(echo ${QUERY_STRING:1}    | cut -d'?' -f3-1000)
 declare edfile=${DATADIR}/${formid}/edits-${formid}.json
-status=200
+status=505
 
 function check_submissionid(){
   edfile="$1"
@@ -34,8 +34,6 @@ elif [ "$checktype" == "edit" ]; then
   declare col_name=$(echo ${submission_id} | cut -d'?' -f2)
   declare submission_id=$(echo ${submission_id} | cut -d'?' -f1)
   status=$(Rscript --vanilla check_edit.R $edfile $submission_id $col_name $new_value)
-else
-  status=505
 fi
 
 printf "Content-Type: application/json; charset=UTF-8\r\n"

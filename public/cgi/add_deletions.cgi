@@ -19,10 +19,6 @@ printf '  "%s": {
   }' ${subm_ids[$i]} $(date -u +%Y-%m-%dT%T ) >> $tmpfile
 done
 
-# TODO: detect existing edit file
-#       - check if submission id already edited
-#       - give error if exists already, show edited entry
-#       - add to file if no error
 if [ -e $edfile ]; then
   declare tmpfile2=$(mktemp)
   touch $tmpfile2

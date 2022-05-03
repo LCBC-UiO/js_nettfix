@@ -1,10 +1,13 @@
-#!/usr/bin/env bash
+#!/usr/bin/env Rscript
 
-printf "Content-Type: application/json; charset=UTF-8\r\n"
-printf "\r\n"
+forms <- list.files(Sys.getenv("DATADIR"))
 
-printf '{\n\t"forms": ["NULL"'
-for formid in $(ls $DATADIR); do
-    printf ',\n\t\t"%s"' $formid
-done 
-printf ']\n}'
+
+# Return statuscode to command line
+cat(
+    "Content-Type: application/json; charset=UTF-8\r",
+    sprintf("Status: %s\r", 200),
+    "\r",
+    jsonlite::toJSON(list("forms" = forms), pretty = TRUE, auto_unbox = TRUE),
+    sep = "\n"
+)
