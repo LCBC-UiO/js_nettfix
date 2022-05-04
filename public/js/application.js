@@ -75,6 +75,9 @@ async function display_table(table, divid, ncol = null){
                 e_input.classList.add("border-0")
                 e_td.classList = "border border-dark border-2  table-th ";
             }
+            if(col_idx == 0 ){
+                e_input.disabled = true;
+            }
             e_td.appendChild(e_input);
             if(row_idx == 0){
                 e_input.disabled = true; //dont allow input on header

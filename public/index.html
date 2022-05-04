@@ -8,8 +8,13 @@
     <script src='bootstrap/bootstrap.bundle.min.js'></script>
     <script src='js/jquery.min.js'></script>
     <style>
-      .table-th { position: sticky; top: 0; z-index: 1;}
-      .table thead th :disabled { background: #0275d8; color: white; }
+      .table thead { position: sticky; top: 0; z-index: 1;}
+      .table thead th :disabled { background-color: #11111122; color: white;}
+      .table thead th:first-child, .table td:first-child {
+        position: sticky;
+        left: 0;
+        background-color: lightgrey;
+      }
       .code{font-family: monospace;}
       input.form-control { width: auto;}
     </style>
@@ -60,7 +65,9 @@
         <div class="tab-pane fade show active" id="edit" role="tabpanel" aria-labelledby="edit-tab">
           <div class="row">
             <div class="col">
-              <div id="tsv" class="table table-responsive d-block d-sm-table"></div>
+              <div class="table-responsive  d-block d-sm-table">
+                <table id="tsv" class="table"></table>
+              </div>
             </div>
           </div>
         </div>
@@ -74,7 +81,8 @@
             </div>
             <div class="col-6">
               <p>Data preview</p>
-              <div id="deltsv" class="table table-responsive w-100 d-block d-sm-table" disabled=true>
+              <div class="table-responsive  d-block d-sm-table">
+                <table id="deltsv" class="table"></table>
               </div>
             </div>
           </div>
