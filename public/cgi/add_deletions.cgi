@@ -13,7 +13,7 @@ IFS='-' read -r -a subm_ids <<< "${submission_id}"
 for (( i=0; i<${#subm_ids[@]}; i++ )); do
   if [ $i -ne  0 ]; then printf ',\n'; fi >> $tmpfile
 printf '  "%s": { 
-    "data"   : "delete",
+    "data"   : {},
     "comment": "PLACEHOLDERCOMMENTTEXT",
     "date"   : "%s"
   }' ${subm_ids[$i]} $(date -u +%Y-%m-%dT%T ) >> $tmpfile

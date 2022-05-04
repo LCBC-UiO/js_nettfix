@@ -25,7 +25,7 @@ if [ "$checktype" == "delete" ]; then
     tr -d '\n' < $tmpfile > ${tmpfile}_n
     cat ${tmpfile}_n | sed 's/^/{"submission_id":[/' | sed 's/$/]}/' > $tmpfile
     tmpcont=$(Rscript --vanilla get_entry.R $edfile $submission_id)
-    if [[ $tmpcont =~ '"data": "delete"' ]]; then
+    if [[ $tmpcont =~ '"data": {}' ]]; then
       status=202
     fi
   fi

@@ -12,7 +12,7 @@ if(file.exists(edfile)){
     ed <- jsonlite::read_json(edfile)
     if(submission_id %in% names(ed)){
         entry <- ed[[submission_id]]$data
-        if(entry == "delete"){
+        if(is.null(entry)){
             status <- 203
         }else if(col_name %in% names(entry)){
             status <- 202
